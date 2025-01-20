@@ -1,22 +1,36 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+import React, { useState, useEffect, useRef } from "react";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
 import { MdAttachFile } from "react-icons/md";
 import { VscSend } from "react-icons/vsc";
 
-export default function MainContent() {
+import '@/styles/markdown.css';
+
+
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+
+type MainContentProps = React.PropsWithChildren & {
+  currentChat: Chat | null;
+  sendChatHandler: (message: string) => void;
+};
+
+export default function MainContent({
+  currentChat,
+  sendChatHandler,
+}: MainContentProps) {
   const [message, setMessage] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === "Enter") {
-      if (!event.shiftKey) {
-        event.preventDefault();
-        // 메시지 전송 로직
-        console.log("Send message:", message);
-        setMessage("");
-      }
+  const handleKeyDown = async (
+    event: React.KeyboardEvent<HTMLTextAreaElement>
+  ) => {
+    if (event.key === "Enter" && event.shiftKey) {
+      event.preventDefault();
+      sendChatHandler(message);
+      setMessage("");
     }
   };
 
@@ -40,18 +54,31 @@ export default function MainContent() {
     <div className="flex flex-col flex-1 items-center max-h-dvh bg-[#1f2021ff]">
       <Navbar />
       <div className="flex flex-col w-full h-full overflow-hidden">
-        <div className="flex flex-1 items-center justify-center p-4 transition-all duration-300 ease-in-out overflow-y-auto">
+        <div className="flex flex-1 items-start justify-center p-4 transition-all duration-300 ease-in-out overflow-y-auto">
           {/* Chat interface will go here */}
-          <div className="w-[80%]">
-            {Array.from({ length: 20 }).map((_, i) => (
-              <div
-                key={i}
-                className="p-4 border-b hover:bg-gray-50 transition-colors duration-200 ease-in-out"
-              >
-                Test Content {i + 1}
-              </div>
-            ))}
-          </div>
+          {currentChat && (
+            <div className={`flex flex-col w-[80%]`}>
+              {currentChat.chatLines.map((chatline, index) => (
+                <div
+                  key={`${index}`}
+                  className={`flex w-full ${
+                    chatline.writer === "AI" ? "justify-start" : "justify-end"
+                  } p-4`}
+                >
+                  
+                  <div
+                    className={`rounded-lg p-2 ${
+                      chatline.writer !== "AI" ? "bg-zinc-600" : "markdown-container"
+                    }`}
+                  >
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {chatline.message}
+                    </ReactMarkdown>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         <div className="flex justify-center items-center w-full">
           <div

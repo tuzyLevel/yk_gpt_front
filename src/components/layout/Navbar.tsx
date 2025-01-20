@@ -1,3 +1,5 @@
+"use client";
+
 export default function Navbar() {
   return (
     <nav className="w-full bg-inherit text-white p-4 transition-colors duration-200 ease-in-out">
