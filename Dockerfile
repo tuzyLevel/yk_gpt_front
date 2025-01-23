@@ -14,8 +14,11 @@ COPY . .
 RUN npm install
 
 # Copy .env.local if it exists, rename to .env
-RUN if [ -f .env.build ]; then cp .env.build .env; fi
+# RUN if [ -f .env.build ]; then cp .env.build .env; fi
 # 빌드 시 환경변수 사용 권장
+ARG BACKEND_BASE_URL
+
+ENV BACKEND_BASE_URL=${BACKEND_BASE_URL}
 
 # Build the application
 RUN npm run build
