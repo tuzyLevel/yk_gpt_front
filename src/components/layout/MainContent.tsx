@@ -105,11 +105,9 @@ export default function MainContent({
               className={`shrink-0 cursor-pointer hover:opacity-80 ${
                 message.trim() ? "text-blue-500" : "text-gray-400"
               }`}
-              onClick={() => {
-                if (message.trim()) {
-                  console.log("Send message:", message);
-                  setMessage("");
-                }
+              onClick={()=>{
+                sendChatHandler(message);
+                setMessage("");
               }}
             />
           </div>
