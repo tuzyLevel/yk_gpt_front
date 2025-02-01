@@ -13,7 +13,6 @@ type UseSocketProps = {
 };
 
 const useSocket = ({
-  url = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/ws`,
   receivedChatHandler,
   receivedNewTitleHandler,
 }: UseSocketProps) => {
@@ -22,7 +21,9 @@ const useSocket = ({
   const [isConnected, setIsConnected] = useState(false); // 연결 상태 추적
 
   useEffect(() => {
-    const socket = io(url); // 소켓 인스턴스 생성
+    const socket = io(window.location.origin, {
+      transports: ["websocket"],
+    }); // 소켓 인스턴스 생성
 
     setSocketInstance(socket);
     setIsConnected(socket.connected); // 초기 연결 상태 설정
@@ -69,7 +70,7 @@ const useSocket = ({
       socket.off("connect_error");
       socket.disconnect(); // 명확한 연결 해제
     };
-  }, [url, receivedChatHandler, receivedNewTitleHandler]); // URL이 변경될 때만 소켓 재생성
+  }, [receivedChatHandler, receivedNewTitleHandler]); // URL이 변경될 때만 소켓 재생성
 
   return [socketInstance, isConnected] as const; // 소켓 인스턴스와 연결 상태 반환
 };
