@@ -13,7 +13,7 @@ type UseSocketProps = {
 };
 
 const useSocket = ({
-  url = "http://localhost:8000",
+  url = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/ws`,
   receivedChatHandler,
   receivedNewTitleHandler,
 }: UseSocketProps) => {
