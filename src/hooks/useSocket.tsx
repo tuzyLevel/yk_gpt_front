@@ -22,7 +22,11 @@ const useSocket = ({
 
   useEffect(() => {
     const socket = io(window.location.origin, {
-      transports: ["websocket"],
+      transports: ["websocket", "polling"],
+      upgrade: true,
+      rememberUpgrade: true,
+      secure: true,
+      rejectUnauthorized: false,
     }); // 소켓 인스턴스 생성
 
     setSocketInstance(socket);
