@@ -1,9 +1,24 @@
 "use client";
 
-import React, { useState } from "react";
-import { RxHamburgerMenu } from "react-icons/rx";
-import { CiStickyNote } from "react-icons/ci";
+import React from "react";
+import { LogOut } from "lucide-react";
+
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { signOut } from "next-auth/react";
+import {
+  useSidebar,
+  Sidebar,
+  SidebarHeader,
+  SidebarFooter,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 type SidebarProps = {
   chatList: Chat[];
@@ -13,55 +28,81 @@ type SidebarProps = {
   titleOnClickHandler: (chatId: string) => void;
 } & React.PropsWithChildren;
 
-export default function Sidebar({
+export default function SidebarComponent({
   chatList,
   currentChatListIndex,
-  // setCurrentChatListIndexHandler,
-  resetCurrentChatListIndexHandler,
   titleOnClickHandler,
 }: SidebarProps) {
-  const [isExtended, setIsExtended] = useState<boolean>(true);
-
-  const width = isExtended ? `w-80` : "w-16";
-
-  const sidebarToggleHandler = () => {
-    setIsExtended((prev) => !prev);
-  };
+  const { open, toggleSidebar, isMobile } = useSidebar();
 
   return (
-    <aside
-      className={`${width} bg-[#272626] h-full p-4 flex flex-col flex-shrink-0 transition-all duration-300 ease-in-out `}
-    >
-      <div className="flex justify-even space-y-4 border-b-2 border-white w-full h-10">
-        <button onClick={sidebarToggleHandler} className="hover:scale-125">
-          <RxHamburgerMenu size={24} />
-        </button>
-        <button onClick={() => signOut()}>Sign out</button>
-        <button
-          onClick={resetCurrentChatListIndexHandler}
-          className="hover:scale-125"
-        >
-          <CiStickyNote size={24} />
-        </button>
-      </div>
-      {isExtended && (
-        <div className="flex flex-col overflow-y-auto">
-          {/* Chat history items will go here */}
-          {chatList.map((chat, index) => (
-            <div
-              className={`h-8 hover:bg-slate-500 m-1 rounded-lg py-1 px-2 hover:cursor-pointer ${
-                currentChatListIndex === index ? "bg-slate-600" : ""
-              }`}
-              key={chat.key}
-              onClick={() => titleOnClickHandler(chat.chat_id)}
+    <Sidebar variant="sidebar" collapsible="icon">
+      <SidebarHeader>
+        <Card>
+          {open && (
+            <CardHeader>
+              <CardTitle className="text-center">
+                YK AI Chatbot
+                <VisuallyHidden>AI 채팅 애플리케이션 사이드바</VisuallyHidden>
+              </CardTitle>
+            </CardHeader>
+          )}
+          {!open && (
+            <CardContent className="flex justify-between items-center p-1">
+              YK
+            </CardContent>
+          )}
+        </Card>
+        <Card></Card>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>会話タイトル</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {open &&
+                chatList.map((chat, index) => (
+                  <SidebarMenuItem key={chat.chat_id}>
+                    <SidebarMenuButton
+                      className={`${
+                        currentChatListIndex === index ? "bg-slate-400" : ""
+                      }`}
+                      onClick={() => {
+                        titleOnClickHandler(chat.chat_id);
+                        if (isMobile) toggleSidebar();
+                      }}
+                    >
+                      {chat.title.length > 12
+                        ? chat.title.slice(0, 12) + "..."
+                        : chat.title}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter>
+        <Card className="">
+          <CardContent className="flex justify-between items-center p-2">
+            <button
+              className="w-full flex justify-evenly items-center"
+              onClick={() =>
+                signOut({
+                  callbackUrl: window.location.origin,
+                  redirect: true,
+                })
+              }
             >
-              {chat.title.length > 20
-                ? chat.title.slice(0, 15) + "..."
-                : chat.title}
-            </div>
-          ))}
-        </div>
-      )}
-    </aside>
+              {open ? (
+                <span className="inline-block">Sign out</span>
+              ) : (
+                <LogOut size={16} />
+              )}
+            </button>
+          </CardContent>
+        </Card>
+      </SidebarFooter>
+    </Sidebar>
   );
 }

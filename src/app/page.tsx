@@ -31,9 +31,9 @@ function Home() {
     return <p>Loading...</p>;
   }
 
-  if (session)
+  if (status === "authenticated")
     return (
-      <main className="flex min-h-dvh h-dvh overflow-hidden">
+      <main className="w-full flex min-h-dvh h-dvh overflow-hidden">
         <Sidebar
           chatList={chatList}
           currentChatListIndex={currentChatListIndex}

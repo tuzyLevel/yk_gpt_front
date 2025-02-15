@@ -53,7 +53,10 @@ const UseChat = ({ email }: UseChatProps) => {
     []
   );
 
-  const [socket] = useSocket({ receivedChatHandler, receivedNewTitleHandler });
+  const [socket] = useSocket({
+    receivedChatHandler,
+    receivedNewTitleHandler,
+  });
 
   const sendChatHandler = async (message: string) => {
     const key =
