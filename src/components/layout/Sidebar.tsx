@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { LogOut } from "lucide-react";
+import { LogOut, Plus } from "lucide-react";
 
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { signOut } from "next-auth/react";
@@ -32,13 +32,14 @@ export default function SidebarComponent({
   chatList,
   currentChatListIndex,
   titleOnClickHandler,
+  resetCurrentChatListIndexHandler,
 }: SidebarProps) {
   const { open, toggleSidebar, isMobile } = useSidebar();
 
   return (
     <Sidebar variant="sidebar" collapsible="icon">
       <SidebarHeader>
-        <Card>
+        <Card className={`${!open && "w-[30px] h-[30px]"} `}>
           {open && (
             <CardHeader>
               <CardTitle className="text-center">
@@ -53,7 +54,27 @@ export default function SidebarComponent({
             </CardContent>
           )}
         </Card>
-        <Card></Card>
+        <Card
+          className={`${
+            !open && "w-[30px] "
+          } h-[30px] hover:bg-gray-800 hover:text-white`}
+        >
+          <CardContent className="w-full h-full flex justify-between items-center p-0">
+            <button
+              className="w-full h-full flex justify-evenly items-center rounded-md transition-transform duration-200"
+              onClick={() => {
+                resetCurrentChatListIndexHandler();
+                if (isMobile) toggleSidebar();
+              }}
+            >
+              {open ? (
+                <span className="inline-block">新しい会話</span>
+              ) : (
+                <Plus size={16} />
+              )}
+            </button>
+          </CardContent>
+        </Card>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -83,10 +104,14 @@ export default function SidebarComponent({
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <Card className="">
-          <CardContent className="flex justify-between items-center p-2">
+        <Card
+          className={`${
+            !open && "w-[30px] "
+          } h-[30px] hover:bg-gray-800 hover:text-white`}
+        >
+          <CardContent className="w-full h-full flex justify-between items-center p-0">
             <button
-              className="w-full flex justify-evenly items-center"
+              className="w-full flex justify-evenly items-center "
               onClick={() =>
                 signOut({
                   callbackUrl: window.location.origin,

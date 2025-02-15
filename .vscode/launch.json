@@ -2,36 +2,44 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Next.js: debug server-side",
-      "type": "node-terminal",
-      "request": "launch",
-      "command": "npm run dev"
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to Docker (Next.js)",
+      "port": 9229,
+      "address": "localhost", // Docker Desktop의 경우 "localhost" 또는 "host.docker.internal" 사용
+      "localRoot": "${workspaceFolder}",
+      "remoteRoot": "/app",
+      "restart": true,
+      "skipFiles": [
+        "<node_internals>/**",
+        "node_modules/**"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/.next/**/*.js",
+        "${workspaceFolder}/dist/**/*.js"
+      ],
+      "sourceMapPathOverrides": {
+        "webpack://_N_E/*": "${workspaceFolder}/*"
+      }
     },
     {
-      "name": "Next.js: debug client-side",
       "type": "chrome",
       "request": "launch",
-      "url": "http://localhost:3000",
-    },
-    {
-      "name": "Next.js: debug full stack (WSL)",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/node_modules/.bin/next",
-      "runtimeExecutable": "/home/park/.nvm/versions/node/v22.11.0/bin/node", // WSL 내 Node.js 경로
-      "runtimeArgs": [
-        "--inspect-brk"
-      ],
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "serverReadyAction": {
-        "action": "debugWithEdge",
-        "killOnServerStop": true,
-        "pattern": "- Local:.+(https?://.+)",
-        "uriFormat": "%s",
-        "webRoot": "${workspaceFolder}"
+      "name": "Launch Chrome against localhost",
+      "url": "http://localhost",
+      "webRoot": "${workspaceFolder}",
+      "sourceMapPathOverrides": {
+        "webpack://_N_E/*": "${workspaceFolder}/*"
       }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack Debug",
+      "configurations": [
+        "Attach to Docker (Next.js)",
+        "Launch Chrome against localhost"
+      ]
     }
   ]
 }
