@@ -19,11 +19,11 @@ const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user }) {
       // 허용된 이메일인지 확인
-      const { id } = user;
-      if (!id) return false;
+      const { email } = user;
+      if (!email) return false;
 
       try {
-        const res = await axiosInstance.post("/user", { id });
+        const res = await axiosInstance.post("/user", { email });
 
         const data = await res.data;
 
